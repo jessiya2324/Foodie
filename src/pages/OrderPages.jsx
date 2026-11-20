@@ -77,10 +77,14 @@ export function AddressesPage() {
   const submit = (event) => {
     event.preventDefault();
     if (closing) return;
-    if (![form.name, form.house, form.street, form.city, form.state].every((value) => value?.trim())) {
-      return setError("Complete all required address fields.");
-    }
-    if (!isValidMobile(form.mobile)) return setError("Enter a valid 10-digit Indian mobile number.");
+    if (!form.name?.trim()) return setError("Enter your full name.");
+    if (!form.mobile?.trim()) return setError("Enter your mobile number.");
+    if (!isValidMobile(form.mobile)) return setError("Enter a valid 10-digit Indian mobile number (starting with 6-9).");
+    if (!form.house?.trim()) return setError("Enter your house, flat, or building name.");
+    if (!form.street?.trim()) return setError("Enter your street or area.");
+    if (!form.city?.trim()) return setError("Enter your city.");
+    if (!form.state?.trim()) return setError("Enter your state.");
+    if (!form.pincode?.trim()) return setError("Enter your pincode.");
     if (!/^\d{6}$/.test(form.pincode)) return setError("Enter a valid 6-digit pincode.");
     const saved = {
       ...form,
@@ -137,7 +141,7 @@ export function AddressesPage() {
       </div>
     )}
     {editing && <div className={`modal-backdrop ${closing ? "is-closing" : ""}`} onMouseDown={(event) => event.target === event.currentTarget && closeForm()} onAnimationEnd={finishClosing}>
-      <form className="address-modal form-card" onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="address-form-title">
+      <form className="address-modal form-card" onSubmit={submit} noValidate role="dialog" aria-modal="true" aria-labelledby="address-form-title">
         <div className="address-modal-heading">
           <div>
             <p className="eyebrow">DELIVERY DETAILS</p>
@@ -147,7 +151,7 @@ export function AddressesPage() {
         </div>
         <div className="form-grid">
           <label>Full name<input required autoComplete="name" value={form.name || ""} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label>
-          <label>Mobile number<input required inputMode="numeric" autoComplete="tel-national" maxLength="10" value={form.mobile || ""} onChange={(event) => setForm({ ...form, mobile: event.target.value.replace(/\D/g, "") })} /></label>
+          <label>Mobile number<input required inputMode="numeric" autoComplete="tel-national" maxLength="10" placeholder="10-digit number" value={form.mobile || ""} onChange={(event) => setForm({ ...form, mobile: event.target.value.replace(/\D/g, "") })} /></label>
           <label>House / flat / building name<input required autoComplete="address-line1" value={form.house || ""} onChange={(event) => setForm({ ...form, house: event.target.value })} /></label>
           <label>Street / area<input required autoComplete="address-line2" value={form.street || ""} onChange={(event) => setForm({ ...form, street: event.target.value })} /></label>
           <label>Landmark <span>Optional</span><input value={form.landmark || ""} onChange={(event) => setForm({ ...form, landmark: event.target.value })} /></label>
