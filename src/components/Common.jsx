@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { ArrowRight, Heart, MapPin, Menu, Search, ShoppingBag, Star, X } from "lucide-react";
 import { useFoodie } from "../context/FoodieContext.jsx";
@@ -9,12 +9,20 @@ import foodieMark from "../assets/foodie-mark.svg";
 export function Header() {
   const { cart, user } = useFoodie();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [location, setLocation] = useState(() => localStorage.getItem("foodie-location") || "Bengaluru");
   const [editingLocation, setEditingLocation] = useState(false);
   const [search, setSearch] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
   const count = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+
+  useEffect(() => {
+    const updateScrollState = () => setIsScrolled(window.scrollY > 8);
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, []);
 
   const updateSearch = (value) => {
     setSearch(value);
@@ -35,7 +43,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-stone-100 bg-white/95 backdrop-blur">
+    <header className={`site-header sticky top-0 z-40 border-b border-stone-100 bg-white/95 backdrop-blur ${isScrolled ? "is-scrolled" : ""}`}>
       <div className="site-container flex h-[76px] items-center gap-5">
         <button className="icon-btn md:hidden" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"}>
           {menuOpen ? <X size={21} /> : <Menu size={21} />}
@@ -64,9 +72,9 @@ export function Header() {
           <NavLink to="/offers" className="nav-link">Offers</NavLink>
           <NavLink to="/wishlist" className="nav-link nav-icon-link"><Heart size={18} /> Saved</NavLink>
           <NavLink to={user ? "/profile" : "/login"} className="nav-link">{user ? user.name.split(" ")[0] : "Sign in"}</NavLink>
-          <Link to="/cart" className="cart-link"><ShoppingBag size={18} /><span>Cart</span>{count > 0 && <b>{count}</b>}</Link>
+          <Link to="/cart" className="cart-link"><ShoppingBag size={18} /><span>Cart</span>{count > 0 && <b key={count}>{count}</b>}</Link>
         </nav>
-        <Link to="/cart" className="icon-btn relative lg:hidden" aria-label={`Cart, ${count} items`}><ShoppingBag size={21} />{count > 0 && <span className="cart-badge">{count}</span>}</Link>
+        <Link to="/cart" className="icon-btn relative lg:hidden" aria-label={`Cart, ${count} items`}><ShoppingBag size={21} />{count > 0 && <span key={count} className="cart-badge">{count}</span>}</Link>
       </div>
       <div className="site-container pb-3 md:hidden">
         <div className="relative"><form onSubmit={submitSearch} className="search-field"><Search size={18} className="text-stone-400" /><input value={search} onChange={(e) => updateSearch(e.target.value)} placeholder="Search food or restaurants" aria-label="Search food or restaurants" /></form>
@@ -100,6 +108,59 @@ export function Footer() {
 
 export function PageShell({ children }) {
   const { toast } = useFoodie();
+  useEffect(() => {
+    const main = document.querySelector("main");
+    if (!main || !("IntersectionObserver" in window)) return undefined;
+    const revealTargets = [
+      ".site-container > section",
+      ".hero-content > div",
+      ".section-title",
+      ".page-title",
+      ".category-tile",
+      ".restaurant-card",
+      ".food-card",
+      ".deal-card",
+      ".coupon-card",
+      ".join-banner",
+      ".panel-card",
+      ".form-card",
+      ".address-card",
+      ".profile-shortcut",
+      ".past-order-card",
+      ".restaurant-hero-card",
+      ".food-detail-layout > *",
+      ".empty-state",
+    ].join(",");
+    const observed = new WeakSet();
+    const intersectionObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -36px 0px" });
+    const observeTargets = () => {
+      const targets = [
+        ...main.querySelectorAll(revealTargets),
+        ...document.querySelectorAll("footer > .site-container"),
+      ];
+      targets.forEach((element, index) => {
+        if (observed.has(element)) return;
+        observed.add(element);
+        element.classList.add("scroll-reveal");
+        element.style.setProperty("--reveal-delay", `${Math.min(index % 8, 5) * 55}ms`);
+        intersectionObserver.observe(element);
+      });
+    };
+    observeTargets();
+    const mutationObserver = new MutationObserver(observeTargets);
+    mutationObserver.observe(main, { childList: true, subtree: true });
+    return () => {
+      mutationObserver.disconnect();
+      intersectionObserver.disconnect();
+    };
+  }, []);
   return <><Header /><main className="min-h-[65vh]">{children}</main><Footer />{toast && <div className="toast-message" role="status">{toast}</div>}</>;
 }
 
@@ -139,7 +200,7 @@ export function FoodCard({ food, restaurant, compact = false }) {
   const saved = wishlist.some((item) => item.key === `food:${food.id}`);
   return <article className={`food-card ${compact ? "food-card-compact" : ""}`}>
     <div className="food-photo-wrap"><Link to={`/food/${food.id}`}><ImageWithSkeleton src={food.image} alt={food.name} /></Link><button onClick={() => toggleWishlist("food", food.id)} className={`food-heart ${saved ? "saved" : ""}`} aria-label={saved ? "Remove from favourites" : "Add to favourites"}><Heart size={16} fill={saved ? "currentColor" : "none"} /></button></div>
-    <div className="food-card-content"><div className="flex items-center gap-1"><span className={`food-mark ${food.veg ? "veg" : "nonveg"}`} aria-label={food.veg ? "Vegetarian" : "Non vegetarian"} /></div><Link to={`/food/${food.id}`} className="food-name">{food.name}</Link><p className="food-description">{food.description}</p><div className="mt-auto flex items-center justify-between pt-3"><strong>{money(food.price)}</strong>{amount ? <div className="quantity-control"><button onClick={() => setQuantity(`${food.id}:`, amount - 1)} aria-label="Decrease quantity">−</button><b>{amount}</b><button onClick={() => setQuantity(`${food.id}:`, amount + 1)} aria-label="Increase quantity">+</button></div> : <button className="add-button" onClick={() => addToCart(food, restaurant)}>ADD <span>+</span></button>}</div></div>
+    <div className="food-card-content"><div className="flex items-center gap-1"><span className={`food-mark ${food.veg ? "veg" : "nonveg"}`} aria-label={food.veg ? "Vegetarian" : "Non vegetarian"} /></div><Link to={`/food/${food.id}`} className="food-name">{food.name}</Link><p className="food-description">{food.description}</p><div className="mt-auto flex items-center justify-between pt-3"><strong>{money(food.price)}</strong>{amount ? <div className="quantity-control"><button onClick={() => setQuantity(`${food.id}:`, amount - 1)} aria-label="Decrease quantity">−</button><b className="quantity-value" key={amount}>{amount}</b><button onClick={() => setQuantity(`${food.id}:`, amount + 1)} aria-label="Increase quantity">+</button></div> : <button className="add-button" onClick={() => addToCart(food, restaurant)}>ADD <span>+</span></button>}</div></div>
   </article>;
 }
 

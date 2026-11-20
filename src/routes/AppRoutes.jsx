@@ -1,10 +1,11 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthPage } from "../pages/AuthPages.jsx";
 import { FoodPage, HomePage, InfoPage, NotFoundPage, OffersPage, RestaurantListPage, RestaurantPage } from "../pages/BrowsePages.jsx";
 import { AddressesPage, CartPage, CheckoutPage, OrderConfirmationPage, OrdersPage, PaymentPage, ProfilePage, TrackingPage, WishlistPage } from "../pages/OrderPages.jsx";
 
 export default function AppRoutes() {
-  return <Routes>
+  const location = useLocation();
+  return <div key={location.pathname} className="route-transition"><Routes>
     <Route path="/" element={<HomePage />} />
     <Route path="/restaurants" element={<RestaurantListPage />} />
     <Route path="/restaurants/:id" element={<RestaurantPage />} />
@@ -28,5 +29,5 @@ export default function AppRoutes() {
     <Route path="/privacy" element={<InfoPage type="privacy" />} />
     <Route path="/terms" element={<InfoPage type="terms" />} />
     <Route path="*" element={<NotFoundPage />} />
-  </Routes>;
+  </Routes></div>;
 }
