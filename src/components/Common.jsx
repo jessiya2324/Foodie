@@ -10,7 +10,7 @@ export function Header() {
   const { cart, user } = useFoodie();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [location, setLocation] = useState(() => localStorage.getItem("foodie-location") || "Bengaluru");
+  const [location, setLocation] = useState(() => localStorage.getItem("foodie-location") || "Kaniyakumari");
   const [editingLocation, setEditingLocation] = useState(false);
   const [search, setSearch] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -200,7 +200,7 @@ export function FoodCard({ food, restaurant, compact = false }) {
   const saved = wishlist.some((item) => item.key === `food:${food.id}`);
   return <article className={`food-card ${compact ? "food-card-compact" : ""}`}>
     <div className="food-photo-wrap"><Link to={`/food/${food.id}`}><ImageWithSkeleton src={food.image} alt={food.name} /></Link><button onClick={() => toggleWishlist("food", food.id)} className={`food-heart ${saved ? "saved" : ""}`} aria-label={saved ? "Remove from favourites" : "Add to favourites"}><Heart size={16} fill={saved ? "currentColor" : "none"} /></button></div>
-    <div className="food-card-content"><div className="flex items-center gap-1"><span className={`food-mark ${food.veg ? "veg" : "nonveg"}`} aria-label={food.veg ? "Vegetarian" : "Non vegetarian"} /></div><Link to={`/food/${food.id}`} className="food-name">{food.name}</Link><p className="food-description">{food.description}</p><div className="mt-auto flex items-center justify-between pt-3"><strong>{money(food.price)}</strong>{amount ? <div className="quantity-control"><button onClick={() => setQuantity(`${food.id}:`, amount - 1)} aria-label="Decrease quantity">−</button><b className="quantity-value" key={amount}>{amount}</b><button onClick={() => setQuantity(`${food.id}:`, amount + 1)} aria-label="Increase quantity">+</button></div> : <button className="add-button" onClick={() => addToCart(food, restaurant)}>ADD <span>+</span></button>}</div></div>
+    <div className="food-card-content"><div className="flex items-center justify-between"><span className={`food-mark ${food.veg ? "veg" : "nonveg"}`} aria-label={food.veg ? "Vegetarian" : "Non vegetarian"} /><span className="food-rating"><Star size={12} fill="currentColor" /> {food.rating || restaurant.rating}</span></div><Link to={`/food/${food.id}`} className="food-name">{food.name}</Link><p className="food-description">{food.description}</p><div className="mt-auto flex items-center justify-between pt-3"><strong>{money(food.price)}</strong>{amount ? <div className="quantity-control"><button onClick={() => setQuantity(`${food.id}:`, amount - 1)} aria-label="Decrease quantity">−</button><b className="quantity-value" key={amount}>{amount}</b><button onClick={() => setQuantity(`${food.id}:`, amount + 1)} aria-label="Increase quantity">+</button></div> : <button className="add-button" onClick={() => addToCart(food, restaurant)}>Add to cart <span>+</span></button>}</div></div>
   </article>;
 }
 

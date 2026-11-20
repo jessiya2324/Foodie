@@ -1,16 +1,79 @@
+const image = (id, width = 900) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=85`;
+
 export const categories = [
-  { name: "Biryani", icon: "🍛", query: "biryani" },
-  { name: "Pizza", icon: "🍕", query: "pizza" },
-  { name: "Burgers", icon: "🍔", query: "burger" },
-  { name: "Chinese", icon: "🥡", query: "chinese" },
-  { name: "South Indian", icon: "🥞", query: "south indian" },
-  { name: "North Indian", icon: "🫓", query: "north indian" },
-  { name: "Desserts", icon: "🍰", query: "dessert" },
-  { name: "Beverages", icon: "🧋", query: "beverage" },
-  { name: "Fast Food", icon: "🍟", query: "fast food" },
+  { name: "Biryani", image: image("photo-1633945274405-b6c8069047b0", 500), query: "biryani" },
+  { name: "Pizza", image: image("photo-1579751626657-72bc17010498", 500), query: "pizza" },
+  { name: "Burgers", image: image("photo-1550547660-d9450f859349", 500), query: "burger" },
+  { name: "Chinese", image: image("photo-1569718212165-3a8278d5f624", 500), query: "chinese" },
+  { name: "South Indian", image: image("photo-1630383249896-424e482df921", 500), query: "south indian" },
+  { name: "North Indian", image: image("photo-1631452180519-c014fe946bc7", 500), query: "north indian" },
+  { name: "Desserts", image: image("photo-1533134242443-d4fd215305ad", 500), query: "dessert" },
+  { name: "Beverages", image: image("photo-1572490122747-3968b75cc699", 500), query: "beverage" },
+  { name: "Fast Food", image: image("photo-1573080496219-bb080dd4f877", 500), query: "fast food" },
 ];
 
-const image = (id, width = 900) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=85`;
+const extraMenuItems = {
+  "spice-route": [
+    ["sr-samosa", "Crispy Aloo Samosa", "Starters", 99, true, "photo-1601050690597-df0568f70950", "Flaky pastry filled with spiced potato, served with mint chutney."],
+    ["sr-tikka", "Tandoori Chicken Tikka", "Starters", 279, false, "photo-1603360946369-dc9bb6258143", "Smoky chicken tikka marinated in yoghurt and house spices."],
+    ["sr-mutton-biryani", "Old Delhi Mutton Biryani", "Biryani", 359, false, "photo-1633945274405-b6c8069047b0", "Slow-cooked mutton and aromatic basmati layered dum-style."],
+    ["sr-veg-biryani", "Subz Dum Biryani", "Biryani", 239, true, "photo-1633945274405-b6c8069047b0", "Seasonal vegetables and fragrant rice finished with saffron."],
+    ["sr-butter-chicken", "Butter Chicken", "North Indian", 299, false, "photo-1603894584373-5ac82b2ae398", "Tandoor chicken in a rich, gently spiced tomato-butter gravy."],
+    ["sr-dal", "Dal Makhani", "North Indian", 219, true, "photo-1546833999-b9f581a1996d", "Black lentils simmered overnight with butter and cream."],
+    ["sr-gulab-jamun", "Gulab Jamun (2 pcs)", "Desserts", 89, true, "photo-1488477181946-6428a0291777", "Soft khoya dumplings soaked in warm cardamom syrup."],
+    ["sr-lassi", "Sweet Mango Lassi", "Beverages", 119, true, "photo-1546173159-315724a31696", "Chilled yoghurt blended with ripe mango and a hint of cardamom."],
+  ],
+  "sourdough-project": [
+    ["sp-pepperoni", "Pepperoni Sourdough", "Pizza", 429, false, "photo-1579751626657-72bc17010498", "Slow-fermented crust topped with pepperoni, mozzarella and basil."],
+    ["sp-pesto", "Pesto Garden Pizza", "Pizza", 369, true, "photo-1571407970349-bc81e7e96d47", "Basil pesto, roasted vegetables, mozzarella and a crisp sourdough base."],
+    ["sp-burrata", "Burrata Pomodoro Pizza", "Pizza", 449, true, "photo-1579751626657-72bc17010498", "Tomato, creamy burrata and fresh basil on our signature crust."],
+    ["sp-bruschetta", "Tomato Basil Bruschetta", "Starters", 179, true, "photo-1572695157366-5e585ab2b69f", "Toasted sourdough with marinated tomatoes, basil and olive oil."],
+    ["sp-caprese", "Caprese Salad", "Starters", 229, true, "photo-1512621776951-a57141f2eefd", "Fresh mozzarella, ripe tomato, basil and a balsamic drizzle."],
+    ["sp-alfredo", "Creamy Alfredo Pasta", "Pasta", 329, true, "photo-1473093295043-cdd812d0e601", "Silky parmesan cream sauce tossed with pasta and cracked pepper."],
+    ["sp-lemonade", "Mint Lemonade", "Beverages", 109, true, "photo-1513558161293-cdab765d3b43", "Fresh lemon, cool mint and a splash of sparkling water."],
+    ["sp-choco-tart", "Dark Chocolate Tart", "Desserts", 199, true, "photo-1578985545062-69928b1d9587", "A crisp cocoa shell filled with smooth dark chocolate ganache."],
+  ],
+  "burger-barn": [
+    ["bb-veggie", "Crispy Veggie Stack", "Burgers", 219, true, "photo-1520072959219-c595dc870360", "Crispy vegetable patty, lettuce, tomato and tangy house sauce."],
+    ["bb-bbq", "BBQ Bacon Burger", "Burgers", 329, false, "photo-1550547660-d9450f859349", "Juicy grilled patty, smoky barbecue glaze, bacon and cheddar."],
+    ["bb-onion", "Crispy Onion Rings", "Starters", 139, true, "photo-1639024471283-03518883512d", "Thick-cut onion rings with a crunchy golden crumb."],
+    ["bb-wings", "Hot Honey Chicken Wings", "Starters", 249, false, "photo-1527477396000-e27163b481c2", "Crispy wings coated in sweet honey and a gentle chilli heat."],
+    ["bb-chicken-wrap", "Grilled Chicken Wrap", "Wraps", 239, false, "photo-1626700051175-6818013e1d4f", "Grilled chicken, crunchy slaw and creamy pepper dressing."],
+    ["bb-sundae", "Brownie Fudge Sundae", "Desserts", 199, true, "photo-1563805042-7684c019e1cb", "Warm chocolate brownie topped with vanilla ice cream and fudge."],
+    ["bb-oreo-shake", "Oreo Thick Shake", "Beverages", 179, true, "photo-1572490122747-3968b75cc699", "Creamy vanilla shake blended with chocolate cookie pieces."],
+    ["bb-lemon-soda", "Fresh Lime Soda", "Beverages", 89, true, "photo-1513558161293-cdab765d3b43", "A sparkling fresh-lime cooler, available sweet or salted."],
+  ],
+  "wok-this-way": [
+    ["ww-spring-rolls", "Crispy Veg Spring Rolls", "Starters", 179, true, "photo-1548507200-a6c7d7c1af27", "Golden rolls packed with crunchy vegetables and glass noodles."],
+    ["ww-chicken-rolls", "Chilli Chicken Bites", "Starters", 249, false, "photo-1562967914-608f82629710", "Crisp chicken tossed with green chilli, garlic and spring onion."],
+    ["ww-hakka", "Classic Hakka Noodles", "Fried Rice & Noodles", 219, true, "photo-1569718212165-3a8278d5f624", "Wok-tossed noodles with crunchy vegetables and soy."],
+    ["ww-chicken-noodles", "Chicken Schezwan Noodles", "Fried Rice & Noodles", 269, false, "photo-1569718212165-3a8278d5f624", "Smoky noodles with tender chicken and fiery Schezwan sauce."],
+    ["ww-chicken-rice", "Chicken Fried Rice", "Fried Rice & Noodles", 259, false, "photo-1603133872878-684f208fb84b", "Wok-fried rice with chicken, egg and fresh scallions."],
+    ["ww-chilli-paneer", "Chilli Paneer", "Chinese", 239, true, "photo-1631452180519-c014fe946bc7", "Paneer tossed with peppers in a sweet, spicy Indo-Chinese glaze."],
+    ["ww-brownie", "Chocolate Brownie", "Desserts", 129, true, "photo-1606313564200-e75d5e30476c", "Dense chocolate brownie with a soft, fudgy centre."],
+    ["ww-iced-tea", "Peach Iced Tea", "Beverages", 99, true, "photo-1556679343-c7306c1976bc", "Black tea poured over ice with a bright peach finish."],
+  ],
+  "madras-coffee-house": [
+    ["mc-plain-dosa", "Crispy Ghee Roast Dosa", "South Indian", 159, true, "photo-1630383249896-424e482df921", "Paper-thin dosa roasted with ghee, served with sambar and chutney."],
+    ["mc-podi-idli", "Podi Idli", "South Indian", 139, true, "photo-1589301760014-d929f3979dbc", "Soft idli bites tossed in house-made lentil podi and ghee."],
+    ["mc-pongal", "Ven Pongal", "South Indian", 149, true, "photo-1606491956689-2ea866880c84", "Comforting rice and lentils finished with pepper, cumin and ghee."],
+    ["mc-uttapam", "Onion Tomato Uttapam", "South Indian", 169, true, "photo-1630383249896-424e482df921", "Fluffy rice-and-lentil pancake topped with onion and tomato."],
+    ["mc-bajji", "Crispy Mysore Bajji", "Starters", 119, true, "photo-1601050690597-df0568f70950", "Golden, fluffy fritters with coconut chutney."],
+    ["mc-payasam", "Semiya Payasam", "Desserts", 99, true, "photo-1488477181946-6428a0291777", "Vermicelli pudding gently simmered with milk, cashew and cardamom."],
+    ["mc-masala-chai", "Madras Masala Chai", "Beverages", 59, true, "photo-1571934811356-5cc061b6821f", "Strong tea brewed with milk and warming house spices."],
+    ["mc-badam-milk", "Chilled Badam Milk", "Beverages", 99, true, "photo-1571167765152-a3f2a1e8899b", "Cool, creamy milk with almond, saffron and a touch of rose."],
+  ],
+  "sugar-and-soul": [
+    ["ss-red-velvet", "Red Velvet Cupcake", "Desserts", 139, true, "photo-1587668178277-295251f900ce", "Velvety cocoa sponge crowned with tangy cream-cheese frosting."],
+    ["ss-choco-mousse", "Dark Chocolate Mousse", "Desserts", 189, true, "photo-1578985545062-69928b1d9587", "Light, airy chocolate mousse finished with chocolate shavings."],
+    ["ss-apple-pie", "Warm Apple Crumble", "Desserts", 219, true, "photo-1562007908-17c67e878c88", "Cinnamon apples under a buttery crumble, baked fresh daily."],
+    ["ss-croissant", "Butter Croissant", "Bakery", 119, true, "photo-1555507036-ab1f4038808a", "A flaky, all-butter croissant baked golden in small batches."],
+    ["ss-cinnamon-roll", "Cinnamon Swirl Roll", "Bakery", 169, true, "photo-1509365465985-25d11c17e812", "Soft baked dough spiralled with cinnamon sugar and vanilla glaze."],
+    ["ss-cold-coffee", "Classic Cold Coffee", "Beverages", 149, true, "photo-1461023058943-07fcbe16d735", "Chilled espresso blended smooth with milk and a little sweetness."],
+    ["ss-strawberry-lemonade", "Strawberry Lemonade", "Beverages", 139, true, "photo-1513558161293-cdab765d3b43", "Fresh strawberry and lemon over ice for a sweet-tart refresher."],
+    ["ss-cookie-box", "Chocolate Chip Cookies (3)", "Desserts", 159, true, "photo-1499636136210-6f4ee915583e", "Three soft-centred cookies loaded with dark chocolate chips."],
+  ],
+};
 
 export const restaurants = [
   {
@@ -151,7 +214,25 @@ export const restaurants = [
       { id: "ss-coldbrew", name: "Vanilla Cold Brew", category: "Beverages", price: 179, veg: true, popular: false, image: image("photo-1517701604599-bb29b565090c"), description: "Slow-steeped coffee with a touch of vanilla." },
     ],
   },
-];
+].map((restaurant) => ({
+  ...restaurant,
+  menu: [
+    ...restaurant.menu,
+    ...(extraMenuItems[restaurant.id] || []).map(([id, name, category, price, veg, imageId, description], index) => ({
+      id,
+      name,
+      category,
+      price,
+      veg,
+      popular: index === 0 || index === 4,
+      image: image(imageId),
+      description,
+    })),
+  ].map((food, index) => ({
+    ...food,
+    rating: food.rating || Number((restaurant.rating + [0.1, 0, -0.1][index % 3]).toFixed(1)),
+  })),
+}));
 
 export const findFood = (foodId) => {
   for (const restaurant of restaurants) {

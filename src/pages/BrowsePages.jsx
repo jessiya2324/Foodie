@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Clock3, MapPin, Search, ShieldCheck, SlidersHorizontal, Sparkles, Star, Truck } from "lucide-react";
 import { FoodCard, ImageWithSkeleton, RestaurantCard, RestaurantGrid, SectionHeading } from "../components/Common.jsx";
 import { useFoodie } from "../context/FoodieContext.jsx";
 import { allFoods, categories, findFood, restaurants } from "../data/food.js";
 import { money } from "../utils/storage.js";
 
-const heroImage = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=85";
+const heroImage = "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?auto=format&fit=crop&w=1400&q=85";
 
 export function HomePage() {
-  const [query, setQuery] = useState("");
-  const navigate = useNavigate();
   const { orders } = useFoodie();
   const recentlyOrdered = useMemo(() => {
     const ids = [...new Set(orders.flatMap((order) => order.items.map((item) => item.foodId)))];
@@ -23,29 +21,24 @@ export function HomePage() {
           <span className="hero-kicker"><Sparkles size={14} /> GOOD FOOD, GOOD MOOD</span>
           <h1>Your next<br /><span>great meal</span><br />is right here.</h1>
           <p>From neighbourhood favourites to new discoveries, find something delicious for every kind of day.</p>
-          <form className="hero-search" onSubmit={(e) => { e.preventDefault(); navigate(`/restaurants?q=${encodeURIComponent(query)}`); }}>
-            <MapPin size={19} className="shrink-0 text-brand" /><span className="hidden text-sm font-bold text-stone-700 sm:block">Bengaluru</span><span className="hidden h-7 w-px bg-stone-200 sm:block" />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Restaurant, dish or cuisine..." aria-label="Search for food" />
-            <button type="submit"><Search size={17} /> <span className="hidden sm:inline">Find food</span></button>
-          </form>
           <div className="hero-meta"><span><ShieldCheck size={16} /> Safe & contactless delivery</span><span><Truck size={16} /> At your door in ~30 min</span></div>
         </div>
-        <div className="hero-visual"><ImageWithSkeleton src={heroImage} alt="A table filled with colourful freshly prepared food" /><div className="hero-floating-card"><div className="flex -space-x-2"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=80&q=80" alt="" /><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80" alt="" /><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="" /></div><div><b>Good food travels.</b><small>Loved by 20k+ foodies</small></div><span className="floating-stars">★★★★★</span></div></div>
+        <div className="hero-visual"><ImageWithSkeleton src={heroImage} alt="A freshly prepared, richly spiced chicken biryani" /><div className="hero-floating-card"><div className="flex -space-x-2"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=80&q=80" alt="" /><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80" alt="" /><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="" /></div><div><b>Good food travels.</b><small>Loved by 20k+ foodies</small></div><span className="floating-stars">★★★★★</span></div></div>
       </div>
     </section>
     <section className="site-container py-14 sm:py-16">
       <SectionHeading eyebrow="WHAT ARE YOU CRAVING?" title="Find your flavour" />
-      <div className="category-grid">{categories.map((category) => <Link key={category.name} to={`/restaurants?q=${encodeURIComponent(category.query)}`} className="category-tile"><span>{category.icon}</span><b>{category.name}</b></Link>)}</div>
+      <div className="category-grid">{categories.map((category) => <Link key={category.name} to={`/restaurants?q=${encodeURIComponent(category.query)}`} className="category-tile"><span className="category-photo"><img src={category.image} alt="" loading="lazy" /></span><b>{category.name}</b></Link>)}</div>
     </section>
     <section className="bg-[#fffaf7] py-14 sm:py-16"><div className="site-container"><SectionHeading eyebrow="HAND-PICKED FOR YOU" title="Popular near you" action="Explore all" /><RestaurantGrid items={restaurants.slice(0, 4)} /></div></section>
     <section className="site-container py-14 sm:py-16"><SectionHeading eyebrow="A CUT ABOVE THE REST" title="Top-rated restaurants" action="See all" /><RestaurantGrid items={[...restaurants].sort((a, b) => b.rating - a.rating).slice(0, 4)} /></section>
     <section className="site-container py-14 sm:py-16"><SectionHeading eyebrow="A LITTLE SOMETHING EXTRA" title="Today's good deals" action="See all offers" to="/offers" /><div className="offer-grid">
-      <Link to="/offers" className="deal-card deal-coral"><span>FIRST ORDER SPECIAL</span><b>₹150 off<br />your first bite</b><small>Use code <strong>WELCOME150</strong> · Min order ₹499</small><span className="deal-art">🍽️</span></Link>
-      <Link to="/offers" className="deal-card deal-yellow"><span>GOOD FOOD, GOOD COMPANY</span><b>Buy one,<br />share one.</b><small>On select favourites today</small><span className="deal-art">🍔</span></Link>
+      <Link to="/offers" className="deal-card deal-coral"><span>FIRST ORDER SPECIAL</span><b>₹150 off<br />your first bite</b><small>Use code <strong>WELCOME150</strong> · Min order ₹499</small><img className="deal-art" src="https://images.unsplash.com/photo-1633945274405-b6c8069047b0?auto=format&fit=crop&w=360&q=85" alt="" loading="lazy" /></Link>
+      <Link to="/offers" className="deal-card deal-yellow"><span>GOOD FOOD, GOOD COMPANY</span><b>Buy one,<br />share one.</b><small>On select favourites today</small><img className="deal-art" src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=360&q=85" alt="" loading="lazy" /></Link>
     </div></section>
     <section className="bg-[#fffaf7] py-14 sm:py-16"><div className="site-container"><SectionHeading eyebrow="THE DISHES EVERYONE LOVES" title="Recommended for you" action="See all restaurants" /><div className="food-grid">{allFoods.filter((food) => food.popular).slice(0, 4).map((food) => <FoodCard key={food.id} food={food} restaurant={food.restaurant} />)}</div></div></section>
     {recentlyOrdered.length > 0 && <section className="site-container py-14"><SectionHeading eyebrow="PICK UP WHERE YOU LEFT OFF" title="Recently ordered" /><div className="food-grid">{recentlyOrdered.map((food) => <FoodCard key={food.id} food={food} restaurant={food.restaurant} />)}</div></section>}
-    <section className="site-container py-14"><div className="join-banner"><div><p className="eyebrow text-white/70">A GOOD THING IS COOKING</p><h2>Make tonight<br />a little more delicious.</h2><p>Discover local gems and old favourites, all in one place.</p><Link to="/restaurants" className="white-button">Explore restaurants <ArrowRight size={16} /></Link></div><span className="join-emoji">🥘</span></div></section>
+    <section className="site-container py-14"><div className="join-banner"><div><p className="eyebrow text-white/70">A GOOD THING IS COOKING</p><h2>Make tonight<br />a little more delicious.</h2><p>Discover local gems and old favourites, all in one place.</p><Link to="/restaurants" className="white-button">Explore restaurants <ArrowRight size={16} /></Link></div><img className="join-food-image" src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=500&q=85" alt="" loading="lazy" /></div></section>
   </div>;
 }
 
@@ -97,16 +90,37 @@ export function RestaurantPage() {
   const restaurant = restaurants.find((item) => item.id === id);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("All items");
+  const [sort, setSort] = useState("recommended");
+  const categoriesForMenu = useMemo(
+    () => ["All items", "Recommended", ...new Set((restaurant?.menu || []).map((food) => food.category))],
+    [restaurant],
+  );
+  const menu = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    const items = (restaurant?.menu || []).filter((food) => {
+      const matchesSearch = !term || `${food.name} ${food.description} ${food.category}`.toLowerCase().includes(term);
+      const matchesCategory = selectedCategory === "All items"
+        || (selectedCategory === "Recommended" ? food.popular : food.category === selectedCategory);
+      const matchesDiet = filter === "all" || (filter === "veg" ? food.veg : !food.veg);
+      return matchesSearch && matchesCategory && matchesDiet;
+    });
+    if (sort === "recommended") items.sort((a, b) => Number(b.popular) - Number(a.popular));
+    if (sort === "rating") items.sort((a, b) => b.rating - a.rating);
+    if (sort === "price-low") items.sort((a, b) => a.price - b.price);
+    if (sort === "price-high") items.sort((a, b) => b.price - a.price);
+    return items;
+  }, [restaurant, query, selectedCategory, filter, sort]);
   if (!restaurant) return <NotFoundPage />;
-  const menu = restaurant.menu.filter((food) => food.name.toLowerCase().includes(query.toLowerCase()) && (filter === "all" || (filter === "veg" ? food.veg : !food.veg)));
-  const sections = [...new Set(menu.map((food) => food.category))];
   return <div className="site-container py-8 sm:py-12">
     <Link to="/restaurants" className="back-link"><ArrowLeft size={16} /> All restaurants</Link>
-    <div className="restaurant-hero-card"><ImageWithSkeleton src={restaurant.image} alt={restaurant.name} /><div className="restaurant-hero-overlay"><span className="hero-open">{restaurant.open ? "OPEN NOW" : "CLOSED"}</span><h1>{restaurant.name}</h1><p>{restaurant.cuisine.join(" · ")}</p></div></div>
+    <div className="restaurant-hero-card"><ImageWithSkeleton src={restaurant.image} alt={restaurant.name} /><div className="restaurant-hero-overlay"><span className="hero-open">{restaurant.open ? "OPEN NOW" : "CLOSED"}</span><img className="restaurant-hero-logo" src={restaurant.logo} alt={`${restaurant.name} logo`} /><h1>{restaurant.name}</h1><p>{restaurant.cuisine.join(" · ")}</p></div></div>
     <div className="restaurant-info-row"><div className="flex flex-wrap gap-x-6 gap-y-3"><span className="rating-detail"><Star size={16} fill="currentColor" /> {restaurant.rating} <small>({restaurant.ratingCount.toLocaleString("en-IN")} ratings)</small></span><span><MapPin size={16} /> {restaurant.area}, Bengaluru</span><span><Clock3 size={16} /> {restaurant.deliveryMins} min</span><span><Truck size={16} /> {restaurant.fee ? money(restaurant.fee) : "Free"} delivery</span></div><span className="restaurant-offer">{restaurant.offer}</span></div>
-    <div className="my-9 border-t border-stone-100 pt-8"><div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="eyebrow">MADE FRESH, JUST FOR YOU</p><h2 className="section-title">Our menu</h2></div><div className="list-search menu-search"><Search size={17} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search this menu" aria-label="Search this menu" /></div></div>
-      <div className="filter-row mb-7"><button onClick={() => setFilter("all")} className={`filter-chip ${filter === "all" ? "active" : ""}`}>All items</button><button onClick={() => setFilter("veg")} className={`filter-chip ${filter === "veg" ? "active" : ""}`}><span className="food-mark veg" /> Veg</button><button onClick={() => setFilter("nonveg")} className={`filter-chip ${filter === "nonveg" ? "active" : ""}`}><span className="food-mark nonveg" /> Non-veg</button><span className="ml-auto hidden items-center gap-1 text-xs text-stone-500 sm:flex"><Sparkles size={14} className="text-brand" /> Popular picks marked below</span></div>
-      {sections.length ? sections.map((section) => <section key={section} className="mb-10"><div className="mb-4 flex items-center justify-between border-b border-stone-100 pb-3"><h3 className="text-lg font-extrabold">{section}</h3><span className="text-xs text-stone-400">{menu.filter((food) => food.category === section).length} items</span></div><div className="food-grid">{menu.filter((food) => food.category === section).map((food) => <FoodCard key={food.id} food={food} restaurant={restaurant} />)}</div></section>) : <p className="py-12 text-center text-stone-500">No dishes match your search.</p>}
+    <div className="my-9 border-t border-stone-100 pt-8"><div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="eyebrow">MADE FRESH, JUST FOR YOU</p><h2 className="section-title">Our menu</h2><p className="mt-2 text-sm text-stone-500">Explore {restaurant.menu.length} freshly prepared favourites.</p></div><div className="menu-controls"><div className="list-search menu-search"><Search size={17} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search this menu" aria-label="Search this menu" /></div><label className="sort-select">Sort by <select value={sort} onChange={(e) => setSort(e.target.value)}><option value="recommended">Recommended</option><option value="rating">Top rated</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option></select></label></div></div>
+      <nav className="menu-category-nav" aria-label="Food categories">{categoriesForMenu.map((category) => <button key={category} type="button" className={`filter-chip ${selectedCategory === category ? "active" : ""}`} aria-pressed={selectedCategory === category} onClick={() => setSelectedCategory(category)}>{category}</button>)}</nav>
+      <div className="filter-row menu-filter-row"><button type="button" onClick={() => setFilter("all")} className={`filter-chip ${filter === "all" ? "active" : ""}`} aria-pressed={filter === "all"}>All items</button><button type="button" onClick={() => setFilter("veg")} className={`filter-chip ${filter === "veg" ? "active" : ""}`} aria-pressed={filter === "veg"}><span className="food-mark veg" /> Veg</button><button type="button" onClick={() => setFilter("nonveg")} className={`filter-chip ${filter === "nonveg" ? "active" : ""}`} aria-pressed={filter === "nonveg"}><span className="food-mark nonveg" /> Non-veg</button><span className="ml-auto hidden items-center gap-1 text-xs text-stone-500 sm:flex"><Sparkles size={14} className="text-brand" /> Popular picks marked below</span></div>
+      <p className="menu-result-count" aria-live="polite">{menu.length} {menu.length === 1 ? "dish" : "dishes"}{selectedCategory !== "All items" ? ` in ${selectedCategory}` : ""}</p>
+      {menu.length ? <div className="food-grid restaurant-menu-grid">{menu.map((food) => <FoodCard key={food.id} food={food} restaurant={restaurant} />)}</div> : <p className="py-12 text-center text-stone-500">No dishes match your search and filters.</p>}
     </div>
   </div>;
 }
