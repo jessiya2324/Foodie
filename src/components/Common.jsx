@@ -204,8 +204,8 @@ export function FoodCard({ food, restaurant, compact = false }) {
   </article>;
 }
 
-export function EmptyState({ icon: Icon = ShoppingBag, title, text, action, to = "/" }) {
-  return <div className="empty-state"><div className="empty-icon"><Icon size={28} /></div><h2>{title}</h2><p>{text}</p>{action && <Link className="primary-button mt-5" to={to}>{action}</Link>}</div>;
+export function EmptyState({ icon: Icon = ShoppingBag, title, text, action, to = "/", onAction, className = "" }) {
+  return <div className={`empty-state ${className}`}><div className="empty-icon"><Icon size={28} /></div><h2>{title}</h2><p>{text}</p>{action && (onAction ? <button type="button" className="primary-button mt-5" onClick={onAction}>{action}</button> : <Link className="primary-button mt-5" to={to}>{action}</Link>)}</div>;
 }
 
 export function RestaurantGrid({ items }) {

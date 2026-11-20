@@ -45,29 +45,135 @@ export function AddressesPage() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
   const [error, setError] = useState("");
-  const openForm = (address = {}) => { setEditing(address.id || "new"); setForm({ name: "", mobile: "", house: "", street: "", landmark: "", city: "Bengaluru", state: "Karnataka", pincode: "", type: "Home", ...address }); setError(""); };
+  const [closing, setClosing] = useState(false);
+  const openForm = (address = {}) => {
+    setEditing(address.id || "new");
+    setClosing(false);
+    setForm({
+      name: "",
+      mobile: "",
+      house: "",
+      street: "",
+      landmark: "",
+      city: "",
+      state: "",
+      pincode: "",
+      type: "Home",
+      ...address,
+      isDefault: address.isDefault ?? !addresses.length,
+    });
+    setError("");
+  };
+  const closeForm = () => {
+    setError("");
+    setClosing(true);
+  };
+  const finishClosing = (event) => {
+    if (event.target === event.currentTarget && closing) {
+      setEditing(null);
+      setClosing(false);
+    }
+  };
   const submit = (event) => {
     event.preventDefault();
+    if (closing) return;
+    if (![form.name, form.house, form.street, form.city, form.state].every((value) => value?.trim())) {
+      return setError("Complete all required address fields.");
+    }
     if (!isValidMobile(form.mobile)) return setError("Enter a valid 10-digit Indian mobile number.");
     if (!/^\d{6}$/.test(form.pincode)) return setError("Enter a valid 6-digit pincode.");
-    const saved = { ...form, id: editing === "new" ? makeId("ADDR") : editing };
+    const saved = {
+      ...form,
+      name: form.name.trim(),
+      house: form.house.trim(),
+      street: form.street.trim(),
+      landmark: form.landmark.trim(),
+      city: form.city.trim(),
+      state: form.state.trim(),
+      id: editing === "new" ? makeId("ADDR") : editing,
+    };
     saveAddress(saved);
-    setEditing(null);
-    notify("Address saved");
+    notify(editing === "new" ? "Address saved" : "Address updated");
     if (params.get("return") === "checkout") navigate("/checkout");
+    else closeForm();
   };
-  return <div className="site-container py-10 sm:py-14"><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="eyebrow">WHERE SHOULD WE MEET YOU?</p><h1 className="page-title">Your addresses</h1><p className="mt-2 text-stone-500">Save a few spots for easier, happier deliveries.</p></div><button className="primary-button self-start sm:self-auto" onClick={() => openForm()}><Plus size={17} /> Add new address</button></div>
-    {!addresses.length && !editing ? <div className="py-4"><EmptyState icon={MapPin} title="No saved addresses yet" text="Add your home, work, or favourite place to get started." action="Add your first address" /></div> : <div className="address-grid">{addresses.map((address) => <article key={address.id} className="address-card"><div className="flex items-start justify-between"><span className="address-type">{address.type}</span><div className="flex gap-2"><button onClick={() => openForm(address)} className="small-action">Edit</button><button onClick={() => { if (window.confirm("Delete this saved address?")) deleteAddress(address.id); }} className="small-action danger">Delete</button></div></div><h3>{address.name}</h3><p>{address.house}, {address.street}{address.landmark ? `, near ${address.landmark}` : ""}<br />{address.city}, {address.state} {address.pincode}</p><small>+91 {address.mobile}</small></article>)}</div>}
-    {editing && <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && setEditing(null)}><form className="address-modal form-card" onSubmit={submit}><div className="mb-5 flex items-center justify-between"><div><p className="eyebrow">DELIVERY DETAILS</p><h2 className="text-xl font-extrabold">{editing === "new" ? "Add an address" : "Edit address"}</h2></div><button type="button" className="small-action" onClick={() => setEditing(null)}>Close</button></div>
-      <div className="form-grid"><label>Full name<input required value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label><label>Mobile number<input required inputMode="numeric" maxLength="10" value={form.mobile || ""} onChange={(e) => setForm({ ...form, mobile: e.target.value.replace(/\D/g, "") })} /></label><label>House / flat number<input required value={form.house || ""} onChange={(e) => setForm({ ...form, house: e.target.value })} /></label><label>Street / area<input required value={form.street || ""} onChange={(e) => setForm({ ...form, street: e.target.value })} /></label><label>Landmark <span>Optional</span><input value={form.landmark || ""} onChange={(e) => setForm({ ...form, landmark: e.target.value })} /></label><label>City<input required value={form.city || ""} onChange={(e) => setForm({ ...form, city: e.target.value })} /></label><label>State<input required value={form.state || ""} onChange={(e) => setForm({ ...form, state: e.target.value })} /></label><label>Pincode<input required inputMode="numeric" maxLength="6" value={form.pincode || ""} onChange={(e) => setForm({ ...form, pincode: e.target.value.replace(/\D/g, "") })} /></label></div>
-      <label className="mt-4">Address type<select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}><option>Home</option><option>Work</option><option>Other</option></select></label>{error && <p className="form-error">{error}</p>}<button className="primary-button mt-5 w-full">{editing === "new" ? "Save address" : "Update address"}</button></form></div>}
+  return <div className="site-container addresses-page py-8 sm:py-10">
+    <div className="addresses-heading">
+      <div>
+        <p className="eyebrow">WHERE SHOULD WE MEET YOU?</p>
+        <h1 className="page-title">Your addresses</h1>
+        <p className="mt-2 text-stone-500">Save a few spots for easier, happier deliveries.</p>
+      </div>
+      <button className="primary-button self-start sm:self-auto" onClick={() => openForm()}><Plus size={17} /> Add new address</button>
+    </div>
+    {!addresses.length && !editing ? (
+      <EmptyState
+        className="address-empty-state"
+        icon={MapPin}
+        title="No saved addresses yet"
+        text="Add your home, work, or favourite place to get started."
+        action="Add your first address"
+        onAction={() => openForm()}
+      />
+    ) : (
+      <div className="address-grid">
+        {addresses.map((address) => (
+          <article key={address.id} className="address-card">
+            <div className="address-card-heading">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="address-type">{address.type}</span>
+                {address.isDefault && <span className="address-default">Default address</span>}
+              </div>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => openForm(address)} className="small-action">Edit</button>
+                <button type="button" onClick={() => { if (window.confirm("Delete this saved address?")) deleteAddress(address.id); }} className="small-action danger">Delete</button>
+              </div>
+            </div>
+            <h3>{address.name}</h3>
+            <p>{address.house}, {address.street}{address.landmark ? `, near ${address.landmark}` : ""}<br />{address.city}, {address.state} {address.pincode}</p>
+            <small>+91 {address.mobile}</small>
+          </article>
+        ))}
+      </div>
+    )}
+    {editing && <div className={`modal-backdrop ${closing ? "is-closing" : ""}`} onMouseDown={(event) => event.target === event.currentTarget && closeForm()} onAnimationEnd={finishClosing}>
+      <form className="address-modal form-card" onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="address-form-title">
+        <div className="address-modal-heading">
+          <div>
+            <p className="eyebrow">DELIVERY DETAILS</p>
+            <h2 id="address-form-title">{editing === "new" ? "Add an address" : "Edit address"}</h2>
+          </div>
+          <button type="button" className="small-action" onClick={closeForm}>Cancel</button>
+        </div>
+        <div className="form-grid">
+          <label>Full name<input required autoComplete="name" value={form.name || ""} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label>
+          <label>Mobile number<input required inputMode="numeric" autoComplete="tel-national" maxLength="10" value={form.mobile || ""} onChange={(event) => setForm({ ...form, mobile: event.target.value.replace(/\D/g, "") })} /></label>
+          <label>House / flat / building name<input required autoComplete="address-line1" value={form.house || ""} onChange={(event) => setForm({ ...form, house: event.target.value })} /></label>
+          <label>Street / area<input required autoComplete="address-line2" value={form.street || ""} onChange={(event) => setForm({ ...form, street: event.target.value })} /></label>
+          <label>Landmark <span>Optional</span><input value={form.landmark || ""} onChange={(event) => setForm({ ...form, landmark: event.target.value })} /></label>
+          <label>City<input required autoComplete="address-level2" value={form.city || ""} onChange={(event) => setForm({ ...form, city: event.target.value })} /></label>
+          <label>State<input required autoComplete="address-level1" value={form.state || ""} onChange={(event) => setForm({ ...form, state: event.target.value })} /></label>
+          <label>Pincode<input required inputMode="numeric" autoComplete="postal-code" maxLength="6" value={form.pincode || ""} onChange={(event) => setForm({ ...form, pincode: event.target.value.replace(/\D/g, "") })} /></label>
+        </div>
+        <div className="form-grid-footer">
+          <label className="default-address-control"><input type="checkbox" checked={Boolean(form.isDefault)} onChange={(event) => setForm({ ...form, isDefault: event.target.checked })} /> Set as default address</label>
+          <label className="address-type-field">Address type<select value={form.type || "Home"} onChange={(event) => setForm({ ...form, type: event.target.value })}><option>Home</option><option>Work</option><option>Other</option></select></label>
+        </div>
+        {error && <p className="form-error" role="alert">{error}</p>}
+        <div className="address-form-actions">
+          <button type="button" className="secondary-button" onClick={closeForm}>Cancel</button>
+          <button type="submit" className="primary-button" disabled={closing}>{editing === "new" ? "Save address" : "Save changes"}</button>
+        </div>
+      </form>
+    </div>}
   </div>;
 }
 
 export function CheckoutPage() {
   const { cart, addresses, user, setCart } = useFoodie();
-  const [selected, setSelected] = useState(addresses[0]?.id || "");
-  const [mobile, setMobile] = useState(user?.mobile || addresses[0]?.mobile || "");
+  const defaultAddress = addresses.find((address) => address.isDefault) || addresses[0];
+  const [selected, setSelected] = useState(defaultAddress?.id || "");
+  const [mobile, setMobile] = useState(user?.mobile || defaultAddress?.mobile || "");
   const [instructions, setInstructions] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -81,7 +187,7 @@ export function CheckoutPage() {
   };
   return <div className="site-container py-10 sm:py-14"><p className="eyebrow">ONE LAST THING</p><h1 className="page-title">Delivery details</h1><div className="checkout-layout mt-8"><div className="space-y-5">
     <div className="panel-card"><div className="flex items-center justify-between"><h2 className="panel-heading">Delivery address</h2><Link to="/addresses?return=checkout" className="text-sm font-bold text-brand">Manage addresses</Link></div>
-      {addresses.length ? <div className="address-select-list">{addresses.map((address) => <label key={address.id} className={selected === address.id ? "selected" : ""}><input type="radio" name="address" checked={selected === address.id} onChange={() => { setSelected(address.id); setMobile(address.mobile); }} /><span className="address-type">{address.type}</span><b>{address.name}</b><small>{address.house}, {address.street}, {address.city} {address.pincode}</small></label>)}</div> : <div className="empty-address"><MapPin size={22} /><p>Add a delivery address to continue.</p><Link to="/addresses?return=checkout" className="secondary-button">Add address</Link></div>}
+      {addresses.length ? <div className="address-select-list">{addresses.map((address) => <label key={address.id} className={selected === address.id ? "selected" : ""}><input type="radio" name="address" checked={selected === address.id} onChange={() => { setSelected(address.id); setMobile(address.mobile); }} /><span className="address-type">{address.type}</span>{address.isDefault && <small className="address-default">Default address</small>}<b>{address.name}</b><small>{address.house}, {address.street}, {address.city} {address.pincode}</small></label>)}</div> : <div className="empty-address"><MapPin size={22} /><p>Add a delivery address to continue.</p><Link to="/addresses?return=checkout" className="secondary-button">Add address</Link></div>}
       <label className="mt-5">Delivery contact number<input inputMode="numeric" maxLength="10" value={mobile} onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))} placeholder="10-digit mobile number" /></label>
     </div>
     <div className="panel-card"><label className="instruction-field"><h3 className="panel-heading">Delivery instructions <span>Optional</span></h3><textarea rows="3" value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="E.g. Please leave it at the door..." /></label></div>

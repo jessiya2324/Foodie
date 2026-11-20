@@ -12,7 +12,13 @@ export function FoodieProvider({ children }) {
     setCartState(updated);
   };
   const [wishlist, setWishlist] = useState(() => readStorage("foodie-wishlist", []));
-  const [addresses, setAddresses] = useState(() => readStorage("foodie-addresses", []));
+  const [addresses, setAddresses] = useState(() => {
+    const saved = readStorage("foodie-addresses", []);
+    return (Array.isArray(saved) ? saved : []).map((address, index) => ({
+      ...address,
+      isDefault: address.isDefault ?? index === 0,
+    }));
+  });
   const [orders, setOrders] = useState(() => readStorage("foodie-orders", []));
   const [user, setUser] = useState(() => readStorage("foodie-user", null));
   const [toast, setToast] = useState("");
@@ -71,11 +77,21 @@ export function FoodieProvider({ children }) {
   };
   const saveAddress = (address) => {
     setAddresses((current) => {
-      const exists = current.some((item) => item.id === address.id);
-      return exists ? current.map((item) => item.id === address.id ? address : item) : [...current, { ...address, id: address.id || makeId("ADDR") }];
+      const id = address.id || makeId("ADDR");
+      const exists = current.some((item) => item.id === id);
+      const hasOtherDefault = current.some((item) => item.id !== id && item.isDefault);
+      const saved = { ...address, id, isDefault: Boolean(address.isDefault || !hasOtherDefault) };
+      const updated = current.map((item) => item.id === id
+        ? saved
+        : saved.isDefault ? { ...item, isDefault: false } : item);
+      return exists ? updated : [...updated, saved];
     });
   };
-  const deleteAddress = (id) => setAddresses((current) => current.filter((address) => address.id !== id));
+  const deleteAddress = (id) => setAddresses((current) => {
+    const remaining = current.filter((address) => address.id !== id);
+    if (!remaining.length || remaining.some((address) => address.isDefault)) return remaining;
+    return remaining.map((address, index) => ({ ...address, isDefault: index === 0 }));
+  });
   const updateOrder = (orderId, update) =>
     setOrders((current) => current.map((order) => order.id === orderId ? { ...order, ...update } : order));
   const placeOrder = (details) => {

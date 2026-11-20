@@ -248,6 +248,13 @@ img{display:block;max-width:100%}
 .order-status-pill.delivered{background:#e8f5eb;color:#277949}
 .address-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-top:30px}
 .address-card{border:1px solid #eee9e5;border-radius:14px;padding:17px}
+.addresses-heading,.address-card-heading,.address-modal-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.addresses-heading{align-items:flex-end;margin-bottom:24px}
+.address-grid{margin-top:22px}
+.address-empty-state{min-height:0;padding:24px 12px 30px}
+.address-empty-state .empty-icon{width:62px;height:62px}
+.address-empty-state h2{margin-top:14px}
+.address-default{display:inline-block;border-radius:50px;background:#eaf5ec;padding:4px 8px;color:#32804a;font-size:9px;font-weight:800;white-space:nowrap}
 .address-type{display:inline-block;border-radius:5px;background:#fff1ec;padding:4px 7px;color:#dc5635;font-size:9px;font-weight:800}
 .address-card h3{margin:14px 0 5px;font-size:14px;font-weight:800}
 .address-card p{margin:0;color:#756e68;font-size:12px;line-height:1.65}
@@ -260,6 +267,20 @@ img{display:block;max-width:100%}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 13px}
 .form-grid label{margin-bottom:12px}
 .form-grid input{padding:10px 11px}
+.address-modal-heading{margin-bottom:20px}
+.address-modal-heading h2{margin:0;font-size:20px;font-weight:800}
+.form-grid-footer{display:grid;grid-template-columns:1fr 1fr;align-items:end;gap:13px}
+.form-grid-footer .default-address-control{display:flex;min-height:40px;flex-direction:row;align-items:center;gap:9px;margin:0;color:#514b46;font-size:12px;font-weight:700}
+.default-address-control input{width:16px;height:16px;margin:0;accent-color:#f05a36}
+.form-grid-footer .address-type-field{margin:0}
+.address-type-field select{width:100%;height:39px;border:1px solid #ebe5e1;border-radius:9px;background:#fff;padding:0 11px;color:#282522;font-size:13px}
+.address-form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.address-form-actions .primary-button,.address-form-actions .secondary-button{min-width:132px}
+.address-modal .form-error{margin-top:12px}
+.modal-backdrop.is-closing{animation:backdrop-out .18s ease both}
+.modal-backdrop.is-closing .address-modal{animation:modal-out .18s ease both}
+@keyframes backdrop-out{to{opacity:0}}
+@keyframes modal-out{to{opacity:0;transform:translateY(10px) scale(.98)}}
 .form-error{margin:5px 0 0;color:#c23d31;font-size:12px;font-weight:600}
 .address-select-list{display:grid;gap:9px;margin-top:17px}
 .address-select-list label{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;border:1px solid #eee9e5;border-radius:11px;padding:13px 13px 13px 40px;cursor:pointer}
@@ -427,6 +448,9 @@ img{display:block;max-width:100%}
   .restaurant-hero-card{height:195px}
   .restaurant-hero-overlay{right:16px;bottom:17px;left:16px}
   .restaurant-hero-overlay h1{font-size:26px}
+  .addresses-heading{align-items:flex-start;flex-direction:column}
+  .form-grid-footer{grid-template-columns:1fr}
+  .address-form-actions .primary-button,.address-form-actions .secondary-button{min-width:0;flex:1}
   .restaurant-info-row>div{gap:12px}
   .restaurant-info-row>div>span{font-size:10px}
   .restaurant-offer{font-size:10px}
@@ -454,7 +478,7 @@ img{display:block;max-width:100%}
 html{scroll-behavior:smooth;scroll-padding-top:88px}
 body{overflow-x:hidden}
 .route-transition{animation:route-enter .38s cubic-bezier(.2,.7,.25,1) both}
-@keyframes route-enter{from{opacity:.55;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes route-enter{from{opacity:.55}to{opacity:1}}
 :where(a,button,input,textarea,select){transition-duration:.22s}
 .site-header{transition:background .3s ease,box-shadow .3s ease,border-color .3s ease}
 .site-header.is-scrolled{border-color:#eee5df;background:rgba(255,255,255,.86);box-shadow:0 8px 26px #27170e0c;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
